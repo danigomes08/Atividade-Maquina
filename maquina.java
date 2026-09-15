@@ -130,19 +130,37 @@ public class MaquinaDeLavar {
         return tampaFechada;
     }
 
-    public static void main(String[] args) {
+        public static void main(String[] args) {
         MaquinaDeLavar maquina = new MaquinaDeLavar();
 
-        // Exemplo de uso da máquina de lavar
+        // A ideia da main e provar que a maquina de estados funciona:
+        // cada acao valida muda o estado, e cada acao invalida e bloqueada.
+        // Por isso alternamos casos que devem dar certo com casos que devem falhar.
+
         maquina.ligar();
+        maquina.ligar();                  // erro esperado: ja esta ligada
+
         maquina.abrirTampa();
+        maquina.iniciarLavagem();         // erro esperado: tampa aberta
         maquina.fecharTampa();
-        maquina.iniciarLavagem(); // abrir a tampa para testar
-        maquina.pausarLavagem();
-        maquina.retomarLavagem();
-        maquina.concluirLavagem();
-        maquina.iniciarCentrifugacao();
-        maquina.concluirCentrifugacao();
-        maquina.desligar(); // tentar desligar enquanto estiver desligada
+        maquina.iniciarLavagem();         // ok: LIGADA + tampa fechada -> LAVANDO
+
+        maquina.abrirTampa();             // erro esperado: esta lavando
+        maquina.desligar();               // erro esperado: esta lavando
+
+        maquina.pausarLavagem();          // ok: LAVANDO -> PAUSADA
+        maquina.pausarLavagem();          // erro esperado: ja esta pausada
+        maquina.retomarLavagem();         // ok: PAUSADA -> LAVANDO
+
+        maquina.concluirLavagem();        // ok: LAVANDO -> LAVAGEM_CONCLUIDA
+        maquina.iniciarCentrifugacao();   // ok: LAVAGEM_CONCLUIDA -> CENTRIFUGANDO
+        maquina.abrirTampa();             // erro esperado: esta centrifugando
+        maquina.concluirCentrifugacao();  // ok: CENTRIFUGANDO -> CENTRIFUGACAO_CONCLUIDA
+
+        maquina.abrirTampa();             // ok: ciclo terminou, pode tirar a roupa
+        maquina.desligar();               // ok: CENTRIFUGACAO_CONCLUIDA -> DESLIGADA
+        maquina.desligar();               // erro esperado: ja esta desligada
+
+        System.out.println("Estado final: " + maquina.getEstado());
     }
 }
